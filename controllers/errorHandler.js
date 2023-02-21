@@ -7,3 +7,7 @@ exports.errorHandler = (err, req, res, next) => {
     res.status(500).send({ msg: "Internal Server Error" });
   }
 };
+
+exports.handle404nonExistentPaths = (request, response, next) => {
+  response.status(404).send({ msg: "Path Not Found" });
+};

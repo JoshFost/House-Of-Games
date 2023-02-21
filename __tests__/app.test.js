@@ -78,4 +78,31 @@ describe("app", () => {
         });
     });
   });
+  describe("/api/reviews/:review_id", () => {
+    it("200: it should respond with a review object with the correct properties", () => {
+      return request(app)
+        .get("/api/reviews/2")
+        .expect(200)
+        .then(({ body }) => {
+          const { review } = body;
+          expect(review).toHaveProperty("review_id");
+          expect(review).toHaveProperty("title");
+          expect(review).toHaveProperty("review_body");
+          expect(review).toHaveProperty("designer");
+          expect(review).toHaveProperty("review_img_url");
+          expect(review).toHaveProperty("votes");
+          expect(review).toHaveProperty("category");
+          expect(review).toHaveProperty("owner");
+          expect(review).toHaveProperty("created_at");
+        });
+    });
+    it("404: should respond with 404 Not Found if given a valid but not existent path", () => {
+      return request(app)
+        .get("/api/bananas")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Path Not Found");
+        });
+    });
+  });
 });

@@ -11,7 +11,6 @@ exports.fetchAllCategoryData = () => {
     )
     .then((result) => {
       const categories = result.rows;
-      //   console.log(categories);
       return categories;
     });
 };
@@ -20,9 +19,8 @@ exports.fetchAllReviewData = () => {
   return db
     .query(
       `
-    SELECT 
-      reviews.*, 
-      COUNT(comments.review_id) AS comment_count
+    SELECT reviews.*, 
+    COUNT(comments.review_id) AS comment_count
     FROM reviews
     LEFT JOIN comments ON reviews.review_id = comments.review_id
     GROUP BY reviews.review_id
@@ -32,5 +30,24 @@ exports.fetchAllReviewData = () => {
     .then((result) => {
       const results = result.rows;
       return results;
+    });
+};
+
+exports.fetchReviewById = (review_id, sort_by) => {
+  return db
+    .query(
+      `
+    SELECT reviews.*, 
+    COUNT(comments.review_id) AS comment_count
+    FROM reviews
+    LEFT JOIN comments ON reviews.review_id = comments.review_id
+    WHERE reviews.review_id = $1
+    GROUP BY reviews.review_id
+    `,
+      [review_id]
+    )
+    .then((results) => {
+      const review = results.rows[0];
+      return review;
     });
 };

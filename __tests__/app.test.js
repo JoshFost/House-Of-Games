@@ -85,15 +85,15 @@ describe("app", () => {
         .expect(200)
         .then(({ body }) => {
           const { review } = body;
-          expect(review).toHaveProperty("review_id");
-          expect(review).toHaveProperty("title");
-          expect(review).toHaveProperty("review_body");
-          expect(review).toHaveProperty("designer");
-          expect(review).toHaveProperty("review_img_url");
-          expect(review).toHaveProperty("votes");
-          expect(review).toHaveProperty("category");
-          expect(review).toHaveProperty("owner");
-          expect(review).toHaveProperty("created_at");
+          expect(review).toHaveProperty("review_id", expect.any(Number));
+          expect(review).toHaveProperty("title", expect.any(String));
+          expect(review).toHaveProperty("review_body", expect.any(String));
+          expect(review).toHaveProperty("designer", expect.any(String));
+          expect(review).toHaveProperty("review_img_url", expect.any(String));
+          expect(review).toHaveProperty("votes", expect.any(Number));
+          expect(review).toHaveProperty("category", expect.any(String));
+          expect(review).toHaveProperty("owner", expect.any(String));
+          expect(review).toHaveProperty("created_at", expect.any(String));
         });
     });
     it("404: should respond with 404 Not Found if given a valid but not existent path", () => {

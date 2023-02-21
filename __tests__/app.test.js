@@ -36,12 +36,4 @@ describe("app", () => {
         });
     });
   });
-  // describe("/api/reviews/review_id", () => {
-  //   it("200: it should respond with a review object with the correct properties", () => {
-  //     return request(app)
-  //       .get("/api/reviews/review_id")
-  //       .expect(200)
-  //       .then((response) => {});
-  //   });
-  // });
 });

@@ -104,5 +104,14 @@ describe("app", () => {
           expect(body.msg).toBe("Path Not Found");
         });
     });
+    it("should respond with a 404 error if review_id does not exist", () => {
+      return request(app)
+        .get("/api/reviews/999")
+        .expect(404)
+        .then(({ body }) => {
+          console.log(body.msg);
+          expect(body.msg).toBe("Not Found");
+        });
+    });
   });
 });

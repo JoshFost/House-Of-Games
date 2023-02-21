@@ -24,7 +24,9 @@ app.get("/api/reviews", getReviewData);
 app.get("/api/reviews/:review_id", getReviewById);
 
 app.use(handle404nonExistentPaths);
-app.use(handle500Errors);
-app.use(handleCustomErrors);
+
 app.use(errorHandler);
+
+app.use(handle500Errors);
+
 module.exports = app;

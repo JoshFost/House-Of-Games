@@ -47,7 +47,14 @@ exports.fetchReviewById = (review_id, sort_by) => {
       [review_id]
     )
     .then((results) => {
-      const review = results.rows[0];
-      return review;
+      const rowCount = results.rowCount;
+      if (rowCount === 0) {
+        const error = new Error("review_id not found");
+        error.status = 404;
+        throw error;
+        // return Promise.reject("review_id not found");
+      } else {
+        return results.rows[0];
+      }
     });
 };

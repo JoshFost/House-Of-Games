@@ -78,4 +78,40 @@ describe("app", () => {
         });
     });
   });
+  describe("/api/reviews/:review_id", () => {
+    it("200: it should respond with a review object with the correct properties", () => {
+      return request(app)
+        .get("/api/reviews/2")
+        .expect(200)
+        .then(({ body }) => {
+          const { review } = body;
+          expect(review).toHaveProperty("review_id", expect.any(Number));
+          expect(review).toHaveProperty("title", expect.any(String));
+          expect(review).toHaveProperty("review_body", expect.any(String));
+          expect(review).toHaveProperty("designer", expect.any(String));
+          expect(review).toHaveProperty("review_img_url", expect.any(String));
+          expect(review).toHaveProperty("votes", expect.any(Number));
+          expect(review).toHaveProperty("category", expect.any(String));
+          expect(review).toHaveProperty("owner", expect.any(String));
+          expect(review).toHaveProperty("created_at", expect.any(String));
+        });
+    });
+    it("404: should respond with 404 Not Found if given a valid but not existent path", () => {
+      return request(app)
+        .get("/api/bananas")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Path Not Found");
+        });
+    });
+    it("should respond with a 404 error if review_id does not exist", () => {
+      return request(app)
+        .get("/api/reviews/999")
+        .expect(404)
+        .then(({ body }) => {
+          console.log(body.msg);
+          expect(body.msg).toBe("Not Found");
+        });
+    });
+  });
 });

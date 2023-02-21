@@ -10,6 +10,8 @@ app.get("/api", (req, res) => {
 });
 
 app.get("/api/categories", getCategoryData);
-// console.log(getCategoryData);
+
+// app.get("/api/reviews/review_id", getReviewById);
+
 app.use(errorHandler);
 module.exports = app;

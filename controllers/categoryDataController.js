@@ -1,19 +1,25 @@
-const { fetchAllCategoryData } = require("../models/categoryDataModel");
+const {
+  fetchAllCategoryData,
+  fetchAllReviewData,
+} = require("../models/categoryDataModel");
+const app = require("../app");
 
 exports.getCategoryData = (req, res, next) => {
   fetchAllCategoryData()
     .then((categories) => {
       res.status(200).send({ categories });
     })
-    .catch(next);
+    .catch((err) => {
+      next(err);
+    });
 };
 
-// console.log(categoryData);
-// exports.getCategoryData = (req, res, next) => {
-//   const { categoryData } = req.params;
-//   fetchAllCategoryData(categoryData, (err, data) => {
-//     res.status(200).send({ data });
-//   }).catch((err) => {
-//     next(err);
-//   });
-// };
+exports.getReviewData = (req, res, next) => {
+  fetchAllReviewData()
+    .then((reviews) => {
+      res.status(200).send({ reviews });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};

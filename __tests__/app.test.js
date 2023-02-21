@@ -78,12 +78,79 @@ describe("app", () => {
         });
     });
   });
-  // describe("/api/reviews/review_id", () => {
-  //   it("200: it should respond with a review object with the correct properties", () => {
-  //     return request(app)
-  //       .get("/api/reviews/review_id")
-  //       .expect(200)
-  //       .then((response) => {});
-  //   });
-  // });
+  describe("/api/reviews", () => {
+    it("200: GET - responds with an array of review objects", () => {
+      return request(app)
+        .get("/api/reviews")
+        .expect(200)
+        .then((response) => {
+          const { reviews } = response.body;
+          expect(Array.isArray(reviews)).toBe(true);
+          reviews.forEach((review) => {
+            expect(review).toHaveProperty("owner");
+            expect(review).toHaveProperty("title");
+            expect(review).toHaveProperty("review_id");
+            expect(review).toHaveProperty("category");
+            expect(review).toHaveProperty("review_img_url");
+            expect(review).toHaveProperty("created_at");
+            expect(review).toHaveProperty("votes");
+            expect(review).toHaveProperty("designer");
+            expect(review).toHaveProperty("comment_count");
+          });
+        });
+    });
+    it("returns an array of reviews sorted by date(created_at) in decending order", () => {
+      return request(app)
+        .get("/api/reviews")
+        .expect(200)
+        .then((response) => {
+          const reviews = response.body.reviews;
+          expect(reviews).toBeSortedBy("created_at", { descending: true });
+        });
+    });
+    it("404: should respond with 404 Not Found if given a valid but not existent path", () => {
+      return request(app)
+        .get("/api/reviewsss")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Path Not Found");
+        });
+    });
+  });
+  describe("/api/reviews/:review_id", () => {
+    it("200: it should respond with a review object with the correct properties", () => {
+      return request(app)
+        .get("/api/reviews/2")
+        .expect(200)
+        .then(({ body }) => {
+          const { review } = body;
+          expect(review).toHaveProperty("review_id", expect.any(Number));
+          expect(review).toHaveProperty("title", expect.any(String));
+          expect(review).toHaveProperty("review_body", expect.any(String));
+          expect(review).toHaveProperty("designer", expect.any(String));
+          expect(review).toHaveProperty("review_img_url", expect.any(String));
+          expect(review).toHaveProperty("votes", expect.any(Number));
+          expect(review).toHaveProperty("category", expect.any(String));
+          expect(review).toHaveProperty("owner", expect.any(String));
+          expect(review).toHaveProperty("created_at", expect.any(String));
+        });
+    });
+    it("404: should respond with 404 Not Found if given a valid but not existent path", () => {
+      return request(app)
+        .get("/api/bananas")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Path Not Found");
+        });
+    });
+    it("should respond with a 404 error if review_id does not exist", () => {
+      return request(app)
+        .get("/api/reviews/999")
+        .expect(404)
+        .then(({ body }) => {
+          console.log(body.msg);
+          expect(body.msg).toBe("Not Found");
+        });
+    });
+  });
 });

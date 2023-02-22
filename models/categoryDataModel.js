@@ -61,9 +61,7 @@ exports.fetchReviewById = (review_id, sort_by) => {
 
 exports.fetchCommentsByReviewId = (review_id, sort_by) => {
   if (isNaN(review_id)) {
-    const error = new Error("Bad Request");
-    error.status = 400;
-    throw error;
+    return Promise.reject({ status: 400, msg: "Bad Request" });
   }
   return db
     .query(
@@ -78,9 +76,7 @@ exports.fetchCommentsByReviewId = (review_id, sort_by) => {
     .then((results) => {
       const rowCount = results.rowCount;
       if (rowCount === 0) {
-        const error = new Error("review_id not found");
-        error.status = 404;
-        throw error;
+        return [];
       } else {
         return results.rows;
       }

@@ -58,3 +58,31 @@ exports.fetchReviewById = (review_id, sort_by) => {
       }
     });
 };
+
+exports.fetchCommentsByReviewId = (review_id, sort_by) => {
+  if (isNaN(review_id)) {
+    const error = new Error("Bad Request");
+    error.status = 400;
+    throw error;
+  }
+  return db
+    .query(
+      `
+    SELECT *, comments.comment_id
+    FROM comments
+    WHERE comments.review_id =$1
+    ORDER BY comments.created_at DESC
+    `,
+      [review_id]
+    )
+    .then((results) => {
+      const rowCount = results.rowCount;
+      if (rowCount === 0) {
+        const error = new Error("review_id not found");
+        error.status = 404;
+        throw error;
+      } else {
+        return results.rows;
+      }
+    });
+};

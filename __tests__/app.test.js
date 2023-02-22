@@ -148,8 +148,56 @@ describe("app", () => {
         .get("/api/reviews/999")
         .expect(404)
         .then(({ body }) => {
-          console.log(body.msg);
           expect(body.msg).toBe("Not Found");
+        });
+    });
+  });
+  describe("/api/reviews/:review_id/comments", () => {
+    it("200: GET: it should respond with an object of comments for the given review_id", () => {
+      return request(app)
+        .get("/api/reviews/1/comments")
+        .expect(200)
+        .then(({ body }) => {
+          console.log(body.comments, "<<<<");
+          expect(body.comments).toBeInstanceOf(Object);
+        });
+    });
+    it("200:GET: should respond with the correct properties", () => {
+      return request(app)
+        .get("/api/reviews/1/comments")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comments[0]).toHaveProperty(
+            "comment_id",
+            expect.any(Number)
+          );
+          expect(body.comments[0]).toHaveProperty("votes", expect.any(Number));
+          expect(body.comments[0]).toHaveProperty(
+            "created_at",
+            expect.any(String)
+          );
+          expect(body.comments[0]).toHaveProperty("author", expect.any(String));
+          expect(body.comments[0]).toHaveProperty("body", expect.any(String));
+          expect(body.comments[0]).toHaveProperty(
+            "review_id",
+            expect.any(Number)
+          );
+        });
+    });
+    it("404:should respond with a 404 error if review_id does not exist", () => {
+      return request(app)
+        .get("/api/reviews/999/comments")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Not Found");
+        });
+    });
+    it("400:should responds with an error message when an invalid path is used", () => {
+      return request(app)
+        .get("/api/reviews/not-a-number/comments")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body).toEqual({ msg: "Bad Request" });
         });
     });
   });

@@ -154,21 +154,21 @@ describe("app", () => {
   });
 });
 describe("/api/reviews/:review_id/comments", () => {
-  it("200: GET: it should respond with an object of comments for the given review_id", () => {
+  it("200: GET: it should respond with an array of objects of comments for the given review_id", () => {
     return request(app)
       .get("/api/reviews/1/comments")
       .expect(200)
       .then(({ body }) => {
-        expect(body.comments).toBeInstanceOf(Object);
+        console.log(body.comments);
+        expect(Array.isArray(body.comments)).toBe(true);
       });
   });
   it("200:GET: should respond with an empty array if review_id has no comments", () => {
-    const reviewId = 100;
+    const reviewId = 1;
     return request(app)
       .get(`/api/reviews/${reviewId}/comments`)
       .expect(200)
       .then(({ body }) => {
-        console.log(body);
         if (body.comments.length === 0) {
           expect(body).toEqual({ comments: [] });
         }
@@ -176,7 +176,7 @@ describe("/api/reviews/:review_id/comments", () => {
   });
   it("200:GET: should respond with the correct properties", () => {
     return request(app)
-      .get("/api/reviews/1/comments")
+      .get("/api/reviews/2/comments")
       .expect(200)
       .then(({ body }) => {
         body.comments.forEach((comment) => {

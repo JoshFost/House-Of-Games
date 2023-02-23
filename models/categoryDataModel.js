@@ -1,6 +1,5 @@
 const db = require("../db/connection");
 const format = require("pg-format");
-const { getCategoryData } = require("../controllers/categoryDataController");
 
 exports.fetchAllCategoryData = () => {
   return db
@@ -80,5 +79,20 @@ exports.fetchCommentsByReviewId = (review_id, sort_by) => {
       } else {
         return results.rows;
       }
+    });
+};
+
+exports.fetchPostCommentsByReviewId = (reviewId, username, body) => {
+  return db
+    .query(
+      `
+      INSERT INTO comments (review_id, author, body)
+      VALUES ($1, $2, $3)
+      RETURNING *;
+    `,
+      [reviewId, username, body]
+    )
+    .then((result) => {
+      return result.rows[0];
     });
 };

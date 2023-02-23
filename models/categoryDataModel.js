@@ -58,3 +58,27 @@ exports.fetchReviewById = (review_id, sort_by) => {
       }
     });
 };
+
+exports.fetchCommentsByReviewId = (review_id, sort_by) => {
+  if (isNaN(review_id)) {
+    return Promise.reject({ status: 400, msg: "Bad Request" });
+  }
+  return db
+    .query(
+      `
+    SELECT *, comments.comment_id
+    FROM comments
+    WHERE comments.review_id =$1
+    ORDER BY comments.created_at DESC
+    `,
+      [review_id]
+    )
+    .then((results) => {
+      const rowCount = results.rowCount;
+      if (rowCount === 0) {
+        return [];
+      } else {
+        return results.rows;
+      }
+    });
+};

@@ -77,44 +77,44 @@ describe("app", () => {
           expect(body.msg).toBe("Path Not Found");
         });
     });
-  });
-  describe("/api/reviews", () => {
-    it("200: GET - responds with an array of review objects", () => {
-      return request(app)
-        .get("/api/reviews")
-        .expect(200)
-        .then((response) => {
-          const { reviews } = response.body;
-          expect(Array.isArray(reviews)).toBe(true);
-          reviews.forEach((review) => {
-            expect(review).toHaveProperty("owner");
-            expect(review).toHaveProperty("title");
-            expect(review).toHaveProperty("review_id");
-            expect(review).toHaveProperty("category");
-            expect(review).toHaveProperty("review_img_url");
-            expect(review).toHaveProperty("created_at");
-            expect(review).toHaveProperty("votes");
-            expect(review).toHaveProperty("designer");
-            expect(review).toHaveProperty("comment_count");
+    describe("/api/reviews", () => {
+      it("200: GET - responds with an array of review objects", () => {
+        return request(app)
+          .get("/api/reviews")
+          .expect(200)
+          .then((response) => {
+            const { reviews } = response.body;
+            expect(Array.isArray(reviews)).toBe(true);
+            reviews.forEach((review) => {
+              expect(review).toHaveProperty("owner");
+              expect(review).toHaveProperty("title");
+              expect(review).toHaveProperty("review_id");
+              expect(review).toHaveProperty("category");
+              expect(review).toHaveProperty("review_img_url");
+              expect(review).toHaveProperty("created_at");
+              expect(review).toHaveProperty("votes");
+              expect(review).toHaveProperty("designer");
+              expect(review).toHaveProperty("comment_count");
+            });
           });
-        });
-    });
-    it("returns an array of reviews sorted by date(created_at) in decending order", () => {
-      return request(app)
-        .get("/api/reviews")
-        .expect(200)
-        .then((response) => {
-          const reviews = response.body.reviews;
-          expect(reviews).toBeSortedBy("created_at", { descending: true });
-        });
-    });
-    it("404: should respond with 404 Not Found if given a valid but not existent path", () => {
-      return request(app)
-        .get("/api/reviewsss")
-        .expect(404)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Path Not Found");
-        });
+      });
+      it("returns an array of reviews sorted by date(created_at) in decending order", () => {
+        return request(app)
+          .get("/api/reviews")
+          .expect(200)
+          .then((response) => {
+            const reviews = response.body.reviews;
+            expect(reviews).toBeSortedBy("created_at", { descending: true });
+          });
+      });
+      it("404: should respond with 404 Not Found if given a valid but not existent path", () => {
+        return request(app)
+          .get("/api/reviewsss")
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).toBe("Path Not Found");
+          });
+      });
     });
   });
   describe("/api/reviews/:review_id", () => {
@@ -148,9 +148,53 @@ describe("app", () => {
         .get("/api/reviews/999")
         .expect(404)
         .then(({ body }) => {
-          console.log(body.msg);
           expect(body.msg).toBe("Not Found");
         });
     });
+  });
+});
+describe("/api/reviews/:review_id/comments", () => {
+  it("200: GET: it should respond with an array of objects of comments for the given review_id", () => {
+    return request(app)
+      .get("/api/reviews/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        console.log(body.comments);
+        expect(Array.isArray(body.comments)).toBe(true);
+      });
+  });
+  it("200:GET: should respond with an empty array if review_id has no comments", () => {
+    const reviewId = 1;
+    return request(app)
+      .get(`/api/reviews/${reviewId}/comments`)
+      .expect(200)
+      .then(({ body }) => {
+        if (body.comments.length === 0) {
+          expect(body).toEqual({ comments: [] });
+        }
+      });
+  });
+  it("200:GET: should respond with the correct properties", () => {
+    return request(app)
+      .get("/api/reviews/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        body.comments.forEach((comment) => {
+          expect(comment).toHaveProperty("comment_id", expect.any(Number));
+          expect(comment).toHaveProperty("votes", expect.any(Number));
+          expect(comment).toHaveProperty("created_at", expect.any(String));
+          expect(comment).toHaveProperty("author", expect.any(String));
+          expect(comment).toHaveProperty("body", expect.any(String));
+          expect(comment).toHaveProperty("review_id", expect.any(Number));
+        });
+      });
+  });
+  it("400:should responds with an error message when an invalid path is used", () => {
+    return request(app)
+      .get("/api/reviews/not-a-number/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body).toEqual({ msg: "Bad Request" });
+      });
   });
 });

@@ -2,6 +2,7 @@ const {
   fetchAllCategoryData,
   fetchAllReviewData,
   fetchReviewById,
+  fetchCommentsByReviewId,
 } = require("../models/categoryDataModel");
 const app = require("../app");
 
@@ -33,5 +34,20 @@ exports.getReviewById = (req, res, next) => {
     })
     .catch((err) => {
       next(err);
+    });
+};
+
+exports.getCommentsByReviewId = (req, res, next) => {
+  const { review_id } = req.params;
+  fetchCommentsByReviewId(review_id)
+    .then((comments) => {
+      res.status(200).send({ comments });
+    })
+    .catch((err) => {
+      if (err.status === 404) {
+        res.status(200).send({ comments: [] });
+      } else {
+        next(err);
+      }
     });
 };

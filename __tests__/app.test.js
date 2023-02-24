@@ -326,7 +326,6 @@ describe("PATCH /api/reviews/:review_id", () => {
       .send({})
       .expect(400)
       .then((response) => {
-        console.log(response.body);
         expect(response.body.msg).toBe("Bad Request");
       });
   });
@@ -368,6 +367,30 @@ describe("PATCH /api/reviews/:review_id", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Bad Request");
+      });
+  });
+});
+describe("/api/users", () => {
+  it("200: GET - responds with an array of user objects", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then((response) => {
+        expect(Array.isArray(response.body.users)).toBe(true);
+        expect(response.body.users.length).toBe(4);
+        response.body.users.forEach((user) => {
+          expect(user).toHaveProperty("username", expect.any(String));
+          expect(user).toHaveProperty("name", expect.any(String));
+          expect(user).toHaveProperty("avatar_url", expect.any(String));
+        });
+      });
+  });
+  it("404: It should respond with status 404 and Path Not Found when passed an incorrect path", () => {
+    return request(app)
+      .get("/api/useffwrrs")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Path Not Found");
       });
   });
 });

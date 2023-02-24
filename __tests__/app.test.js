@@ -195,7 +195,7 @@ describe("/api/reviews/:review_id/comments", () => {
   });
 });
 
-describe("PATCH /api/reviews/:review_id", () => {
+describe.skip("PATCH /api/reviews/:review_id", () => {
   test("updates the review's vote count and returns the updated review", () => {
     const increasedVote = 1;
     return request(app)

@@ -230,7 +230,7 @@ describe("POST /api/reviews/:review_id/comments", () => {
       .send(comment)
       .expect(404)
       .then((response) => {
-        expect(response.body.msg).toBe("User not found");
+        expect(response.body.msg).toBe("Path Not Found");
       });
   });
   it("201: it should ignore unnecessary properties", () => {
@@ -262,7 +262,7 @@ describe("POST /api/reviews/:review_id/comments", () => {
       .send(comment)
       .expect(404)
       .then((response) => {
-        expect(response.body.msg).toBe("User not found");
+        expect(response.body.msg).toBe("Path Not Found");
       });
   });
   it("responds with 400 bad request when given a non-existent fields of username and body", () => {

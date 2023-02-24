@@ -255,4 +255,25 @@ describe("POST /api/reviews/:review_id/comments", () => {
         expect(response.body.comment).toMatchObject(expectedComment);
       });
   });
+  it("it should return a 404 status code passed a non existent id", () => {
+    const comment = { username: "mallionaire", body: "test comment" };
+    return request(app)
+      .post("/api/reviews/99999/comments")
+      .send(comment)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("User not found");
+      });
+  });
+  it("responds with 400 bad request when given a non-existent fields of username and body", () => {
+    const comment = {};
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send(comment)
+      .expect(400)
+      .then((response) => {
+        console.log(response);
+        expect(response.body.msg).toBe("Bad Request");
+      });
+  });
 });

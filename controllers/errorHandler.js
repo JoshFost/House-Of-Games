@@ -18,6 +18,14 @@ exports.handlePsqlErrors = (err, req, res, next) => {
   }
 };
 
+exports.handleReviewNotFoundError = (err, req, res, next) => {
+  if (err.message === "Review not found") {
+    res.status(404).send({ msg: "Review not found" });
+  } else {
+    next(err);
+  }
+};
+
 exports.handle404nonExistentPaths = (request, response, next) => {
   response.status(404).send({ msg: "Path Not Found" });
 };

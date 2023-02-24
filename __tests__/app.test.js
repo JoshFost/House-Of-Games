@@ -331,13 +331,43 @@ describe("PATCH /api/reviews/:review_id", () => {
       });
   });
   it("returns 404 error when review_id is not found", () => {
-    const comment = { username: "mallionaire", body: "test comment" };
+    const increasedVote = 1;
     return request(app)
       .patch("/api/reviews/999")
-      .send(comment)
+      .send({ inc_votes: increasedVote })
       .expect(404)
       .then((response) => {
         expect(response.body.msg).toBe("Review not found");
+      });
+  });
+  it("returns 400 when the review id is not a number", () => {
+    const increasedVote = 1;
+    return request(app)
+      .patch("/api/reviews/bananas")
+      .send({ inc_votes: increasedVote })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
+      });
+  });
+  it("returns 400 when sending a patch request body with an incorrect key", () => {
+    const increasedVote = 1;
+    return request(app)
+      .patch("/api/reviews/1")
+      .send({ dec_votes: increasedVote })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
+      });
+  });
+  it("returns 400 when sending a patch request body with an incorrect value data type", () => {
+    const increasedVote = "one";
+    return request(app)
+      .patch("/api/reviews/1")
+      .send({ inc_votes: increasedVote })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
       });
   });
 });

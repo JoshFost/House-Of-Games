@@ -6,6 +6,7 @@ const {
   fetchCommentsByReviewId,
   updateReviewById,
   insertPostCommentsByReviewId,
+  fetchAllUsersData,
 } = require("../models/categoryDataModel");
 const app = require("../app");
 
@@ -73,6 +74,16 @@ exports.postCommentsByReviewId = (req, res, next) => {
   insertPostCommentsByReviewId(review_id, username, body)
     .then((comment) => {
       res.status(201).send({ comment });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getUsersData = (req, res, next) => {
+  fetchAllUsersData()
+    .then((users) => {
+      res.status(200).send({ users });
     })
     .catch((err) => {
       next(err);

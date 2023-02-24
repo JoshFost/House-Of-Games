@@ -113,3 +113,16 @@ exports.updateReviewById = (review_id, inc_votes) => {
       }
     });
 };
+
+exports.fetchAllUsersData = () => {
+  return db
+    .query(
+      `
+      SELECT * FROM users
+    `
+    )
+    .then((result) => {
+      const users = result.rows;
+      return users;
+    });
+};

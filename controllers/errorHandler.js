@@ -13,6 +13,8 @@ exports.handlePsqlErrors = (err, req, res, next) => {
     res.status(404).send({ msg: "Path Not Found" });
   } else if (err.code === "23502") {
     res.status(400).send({ msg: "Bad Request" });
+  } else if (err.code === "42P01") {
+    res.status(404).send({ msg: "Path Not Found" });
   } else {
     next(err);
   }

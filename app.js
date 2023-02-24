@@ -5,6 +5,7 @@ const {
   getReviewData,
   getReviewById,
   getCommentsByReviewId,
+  patchReviewById,
 } = require("./controllers/categoryDataController");
 
 const {
@@ -25,6 +26,8 @@ app.get("/api/reviews", getReviewData);
 app.get("/api/reviews/:review_id", getReviewById);
 
 app.get("/api/reviews/:review_id/comments", getCommentsByReviewId);
+
+app.patch("/api/reviews/:review_id", patchReviewById);
 
 app.use(handle404nonExistentPaths);
 

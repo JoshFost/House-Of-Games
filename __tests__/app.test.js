@@ -1,10 +1,7 @@
 const request = require("supertest");
 const app = require("../app");
 const db = require("../db/connection");
-const categoryData = require("../db/data/development-data/categories");
-const commentData = require("../db/data/development-data/comments");
-const reviewData = require("../db/data/development-data/reviews");
-const userData = require("../db/data/development-data/users");
+const testData = require("../db/data/test-data");
 const seed = require("../db/seeds/seed");
 const matchers = require("jest-extended");
 expect.extend(matchers);
@@ -18,7 +15,7 @@ afterAll(() => {
 });
 
 beforeEach(() => {
-  return seed({ categoryData, commentData, reviewData, userData });
+  return seed(testData);
 });
 
 describe("app", () => {
@@ -29,7 +26,7 @@ describe("app", () => {
         .expect(200)
         .then((response) => {
           expect(Array.isArray(response.body.categories)).toBe(true);
-          expect(response.body.categories.length).toBe(7);
+          expect(response.body.categories.length).toBe(4);
           response.body.categories.forEach((category) => {
             expect(category).toHaveProperty("slug");
             expect(category).toHaveProperty("description");
@@ -159,7 +156,6 @@ describe("/api/reviews/:review_id/comments", () => {
       .get("/api/reviews/1/comments")
       .expect(200)
       .then(({ body }) => {
-        console.log(body.comments);
         expect(Array.isArray(body.comments)).toBe(true);
       });
   });
@@ -195,6 +191,30 @@ describe("/api/reviews/:review_id/comments", () => {
       .expect(400)
       .then(({ body }) => {
         expect(body).toEqual({ msg: "Bad Request" });
+      });
+  });
+});
+
+describe("PATCH /api/reviews/:review_id", () => {
+  test("updates the review's vote count and returns the updated review", () => {
+    const increasedVote = 1;
+    return request(app)
+      .patch("/api/reviews/1")
+      .send({ inc_votes: increasedVote })
+      .expect(200)
+      .then((response) => {
+        expect(response.body).toEqual({
+          review_id: 1,
+          title: "Agricola",
+          review_body: "Farmyard fun!",
+          designer: "Uwe Rosenberg",
+          review_img_url:
+            "https://images.pexels.com/photos/974314/pexels-photo-974314.jpeg?w=700&h=700",
+          votes: 1 + increasedVote,
+          category: "euro game",
+          owner: "mallionaire",
+          created_at: expect.any(String),
+        });
       });
   });
 });

@@ -82,3 +82,14 @@ exports.fetchCommentsByReviewId = (review_id, sort_by) => {
       }
     });
 };
+exports.updateReviewById = (review_id, inc_votes) => {
+  return db
+    .query(
+      "UPDATE reviews SET votes = votes + $1 WHERE review_id = $2 RETURNING *",
+      [inc_votes, review_id]
+    )
+    .then((result) => {
+      console.log(result);
+      return result.rows[0];
+    });
+};

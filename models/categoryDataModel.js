@@ -78,25 +78,14 @@ exports.fetchCommentsByReviewId = (review_id, sort_by) => {
       }
     });
 };
-exports.updateReviewById = (review_id, inc_votes) => {
-  return db
-    .query(
-      "UPDATE reviews SET votes = votes + $1 WHERE review_id = $2 RETURNING *",
-      [inc_votes, review_id]
-    )
-    .then((result) => {
-      console.log(result);
-      return result.rows[0];
-    });
-};
 
 exports.insertPostCommentsByReviewId = (reviewId, username, body) => {
   return db
     .query(
       `
-      INSERT INTO comments (review_id, author, body)
-      VALUES ($1, $2, $3)
-      RETURNING *;
+    INSERT INTO comments (review_id, author, body)
+    VALUES ($1, $2, $3)
+    RETURNING *;
     `,
       [reviewId, username, body]
     )
@@ -106,6 +95,21 @@ exports.insertPostCommentsByReviewId = (reviewId, username, body) => {
         return [];
       } else {
         return results.rows[0];
+      }
+    });
+};
+
+exports.updateReviewById = (review_id, inc_votes) => {
+  return db
+    .query(
+      "UPDATE reviews SET votes = votes + $1 WHERE review_id = $2 RETURNING *",
+      [inc_votes, review_id]
+    )
+    .then((result) => {
+      if (result.rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Review not found" });
+      } else {
+        return result.rows[0];
       }
     });
 };

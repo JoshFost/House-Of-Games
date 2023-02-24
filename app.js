@@ -15,6 +15,7 @@ const {
   handle500Errors,
   errorHandler,
   handlePsqlErrors,
+  handleReviewNotFoundError,
 } = require("./controllers/errorHandler");
 
 app.use(express.json());
@@ -38,6 +39,7 @@ app.use(handle404nonExistentPaths);
 
 app.use(errorHandler);
 app.use(handlePsqlErrors);
+app.use(handleReviewNotFoundError);
 
 app.use(handle500Errors);
 

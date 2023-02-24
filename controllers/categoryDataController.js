@@ -1,9 +1,11 @@
+//fetch from the model
 const {
   fetchAllCategoryData,
   fetchAllReviewData,
   fetchReviewById,
   fetchCommentsByReviewId,
   updateReviewById,
+  insertPostCommentsByReviewId,
 } = require("../models/categoryDataModel");
 const app = require("../app");
 
@@ -39,7 +41,7 @@ exports.getReviewById = (req, res, next) => {
 };
 
 exports.getCommentsByReviewId = (req, res, next) => {
-  const { review_id } = req.params;
+  const { review_id } = req.params; // destructure
   fetchCommentsByReviewId(review_id)
     .then((comments) => {
       res.status(200).send({ comments });
@@ -56,12 +58,17 @@ exports.getCommentsByReviewId = (req, res, next) => {
 exports.patchReviewById = (req, res, next) => {
   const { review_id } = req.params;
   const { inc_votes } = req.body;
-  // console.log("review_id: ", review_id);
-  // console.log("inc_votes: ", inc_votes);
+  updateReviewById(review_id, inc_votes).then((review) => {
+    res.status(200).send({ review });
+  });
+};
 
-  updateReviewById(review_id, inc_votes)
-    .then((review) => {
-      res.status(200).send({ review });
+exports.postCommentsByReviewId = (req, res, next) => {
+  const { username, body } = req.body;
+  const { review_id } = req.params;
+  insertPostCommentsByReviewId(review_id, username, body)
+    .then((comment) => {
+      res.status(201).send({ comment });
     })
     .catch((err) => {
       next(err);

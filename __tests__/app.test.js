@@ -145,7 +145,7 @@ describe("app", () => {
         .get("/api/reviews/999")
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("Not Found");
+          expect(body.msg).toBe("review_id not found");
         });
     });
   });
@@ -215,6 +215,89 @@ describe.skip("PATCH /api/reviews/:review_id", () => {
           owner: "mallionaire",
           created_at: expect.any(String),
         });
+      });
+  });
+});
+describe("POST /api/reviews/:review_id/comments", () => {
+  it("responds with the posted comment object", () => {
+    const comment = { username: "mallionaire", body: "test comment" };
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send(comment)
+      .expect(201)
+      .then((response) => {
+        const expectedComment = {
+          comment_id: expect.any(Number),
+          author: comment.username,
+          body: comment.body,
+          created_at: expect.any(String),
+          review_id: 1,
+          votes: expect.any(Number),
+        };
+        expect(response.body.comment).toMatchObject(expectedComment);
+      });
+  });
+  it("responds with 400 Bad Request when given an invalid review ID", () => {
+    const comment = { username: "mallionaire", body: "test comment" };
+    return request(app)
+      .post("/api/reviews/not_an_id/comments")
+      .send(comment)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
+      });
+  });
+  it("responds with 404 Not Found when given a non-existent username", () => {
+    const comment = { username: "nonexistentuser", body: "test comment" };
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send(comment)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Path Not Found");
+      });
+  });
+  it("201: it should ignore unnecessary properties", () => {
+    const comment = {
+      username: "mallionaire",
+      body: "test comment",
+      faveAnimal: "snake",
+    };
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send(comment)
+      .expect(201)
+      .then((response) => {
+        const expectedComment = {
+          comment_id: expect.any(Number),
+          author: comment.username,
+          body: comment.body,
+          created_at: expect.any(String),
+          review_id: 1,
+          votes: expect.any(Number),
+        };
+        expect(response.body.comment).toMatchObject(expectedComment);
+      });
+  });
+  it("it should return a 404 status code passed a non existent id", () => {
+    const comment = { username: "mallionaire", body: "test comment" };
+    return request(app)
+      .post("/api/reviews/99999/comments")
+      .send(comment)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Path Not Found");
+      });
+  });
+  it("responds with 400 bad request when given a non-existent fields of username and body", () => {
+    const comment = {};
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send(comment)
+      .expect(400)
+      .then((response) => {
+        console.log(response);
+        expect(response.body.msg).toBe("Bad Request");
       });
   });
 });

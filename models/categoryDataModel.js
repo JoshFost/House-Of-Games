@@ -1,6 +1,5 @@
 const db = require("../db/connection");
 const format = require("pg-format");
-const { getCategoryData } = require("../controllers/categoryDataController");
 
 exports.fetchAllCategoryData = () => {
   return db
@@ -49,10 +48,7 @@ exports.fetchReviewById = (review_id, sort_by) => {
     .then((results) => {
       const rowCount = results.rowCount;
       if (rowCount === 0) {
-        const error = new Error("review_id not found");
-        error.status = 404;
-        throw error;
-        // return Promise.reject("review_id not found");
+        return Promise.reject({ status: 404, msg: "review_id not found" });
       } else {
         return results.rows[0];
       }
@@ -91,5 +87,25 @@ exports.updateReviewById = (review_id, inc_votes) => {
     .then((result) => {
       console.log(result);
       return result.rows[0];
+    });
+};
+
+exports.insertPostCommentsByReviewId = (reviewId, username, body) => {
+  return db
+    .query(
+      `
+      INSERT INTO comments (review_id, author, body)
+      VALUES ($1, $2, $3)
+      RETURNING *;
+    `,
+      [reviewId, username, body]
+    )
+    .then((results) => {
+      const rowCount = results.rowCount;
+      if (rowCount === 0) {
+        return [];
+      } else {
+        return results.rows[0];
+      }
     });
 };

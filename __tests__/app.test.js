@@ -194,6 +194,7 @@ describe("/api/reviews/:review_id/comments", () => {
       });
   });
 });
+
 describe("POST /api/reviews/:review_id/comments", () => {
   it("responds with the posted comment object", () => {
     const comment = { username: "mallionaire", body: "test comment" };
@@ -255,6 +256,16 @@ describe("POST /api/reviews/:review_id/comments", () => {
         expect(response.body.comment).toMatchObject(expectedComment);
       });
   });
+  it("responds with 400 bad request when given a non-existent fields of username and body", () => {
+    const comment = {};
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send(comment)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
+      });
+  });
   it("it should return a 404 status code passed a non existent id", () => {
     const comment = { username: "mallionaire", body: "test comment" };
     return request(app)
@@ -265,14 +276,97 @@ describe("POST /api/reviews/:review_id/comments", () => {
         expect(response.body.msg).toBe("Path Not Found");
       });
   });
-  it("responds with 400 bad request when given a non-existent fields of username and body", () => {
-    const comment = {};
+});
+describe("PATCH /api/reviews/:review_id", () => {
+  it("updates the review's vote count by 1 and returns the updated review", () => {
+    const increasedVote = 1;
     return request(app)
-      .post("/api/reviews/1/comments")
-      .send(comment)
+      .patch("/api/reviews/1")
+      .send({ inc_votes: increasedVote })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.review).toEqual({
+          review_id: 1,
+          title: "Agricola",
+          review_body: "Farmyard fun!",
+          designer: "Uwe Rosenberg",
+          review_img_url:
+            "https://images.pexels.com/photos/974314/pexels-photo-974314.jpeg?w=700&h=700",
+          votes: 2,
+          category: "euro game",
+          owner: "mallionaire",
+          created_at: "2021-01-18T10:00:20.514Z",
+        });
+      });
+  });
+  it("updates the review's vote count by -100 and returns the updated review", () => {
+    const increasedVote = -100;
+    return request(app)
+      .patch("/api/reviews/1")
+      .send({ inc_votes: increasedVote })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.review).toEqual({
+          review_id: 1,
+          title: "Agricola",
+          review_body: "Farmyard fun!",
+          designer: "Uwe Rosenberg",
+          review_img_url:
+            "https://images.pexels.com/photos/974314/pexels-photo-974314.jpeg?w=700&h=700",
+          votes: -99,
+          category: "euro game",
+          owner: "mallionaire",
+          created_at: "2021-01-18T10:00:20.514Z",
+        });
+      });
+  });
+  it("returns 400 error when inc_votes is missing from request body", () => {
+    return request(app)
+      .patch("/api/reviews/1")
+      .send({})
       .expect(400)
       .then((response) => {
-        console.log(response);
+        console.log(response.body);
+        expect(response.body.msg).toBe("Bad Request");
+      });
+  });
+  it("returns 404 error when review_id is not found", () => {
+    const increasedVote = 1;
+    return request(app)
+      .patch("/api/reviews/999")
+      .send({ inc_votes: increasedVote })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Review not found");
+      });
+  });
+  it("returns 400 when the review id is not a number", () => {
+    const increasedVote = 1;
+    return request(app)
+      .patch("/api/reviews/bananas")
+      .send({ inc_votes: increasedVote })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
+      });
+  });
+  it("returns 400 when sending a patch request body with an incorrect key", () => {
+    const increasedVote = 1;
+    return request(app)
+      .patch("/api/reviews/1")
+      .send({ dec_votes: increasedVote })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
+      });
+  });
+  it("returns 400 when sending a patch request body with an incorrect value data type", () => {
+    const increasedVote = "one";
+    return request(app)
+      .patch("/api/reviews/1")
+      .send({ inc_votes: increasedVote })
+      .expect(400)
+      .then((response) => {
         expect(response.body.msg).toBe("Bad Request");
       });
   });

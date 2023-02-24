@@ -4,7 +4,7 @@ const {
   fetchAllReviewData,
   fetchReviewById,
   fetchCommentsByReviewId,
-  fetchPostCommentsByReviewId,
+  insertPostCommentsByReviewId,
 } = require("../models/categoryDataModel");
 const app = require("../app");
 
@@ -57,8 +57,7 @@ exports.getCommentsByReviewId = (req, res, next) => {
 exports.postCommentsByReviewId = (req, res, next) => {
   const { username, body } = req.body;
   const { review_id } = req.params;
-
-  fetchPostCommentsByReviewId(review_id, username, body)
+  insertPostCommentsByReviewId(review_id, username, body)
     .then((comment) => {
       res.status(201).send({ comment });
     })

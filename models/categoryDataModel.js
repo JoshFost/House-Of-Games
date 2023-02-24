@@ -48,10 +48,7 @@ exports.fetchReviewById = (review_id, sort_by) => {
     .then((results) => {
       const rowCount = results.rowCount;
       if (rowCount === 0) {
-        const error = new Error("review_id not found");
-        error.status = 404;
-        throw error;
-        // return Promise.reject("review_id not found");
+        return Promise.reject({ status: 404, msg: "review_id not found" });
       } else {
         return results.rows[0];
       }
@@ -82,7 +79,7 @@ exports.fetchCommentsByReviewId = (review_id, sort_by) => {
     });
 };
 
-exports.fetchPostCommentsByReviewId = (reviewId, username, body) => {
+exports.insertPostCommentsByReviewId = (reviewId, username, body) => {
   return db
     .query(
       `
@@ -92,7 +89,12 @@ exports.fetchPostCommentsByReviewId = (reviewId, username, body) => {
     `,
       [reviewId, username, body]
     )
-    .then((result) => {
-      return result.rows[0];
+    .then((results) => {
+      const rowCount = results.rowCount;
+      if (rowCount === 0) {
+        return [];
+      } else {
+        return results.rows[0];
+      }
     });
 };

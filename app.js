@@ -13,6 +13,7 @@ const {
   handle404nonExistentPaths,
   handle500Errors,
   errorHandler,
+  handlePsqlErrors,
 } = require("./controllers/errorHandler");
 
 app.use(express.json());
@@ -34,6 +35,7 @@ app.post("/api/reviews/:review_id/comments", postCommentsByReviewId);
 app.use(handle404nonExistentPaths);
 
 app.use(errorHandler);
+app.use(handlePsqlErrors);
 
 app.use(handle500Errors);
 

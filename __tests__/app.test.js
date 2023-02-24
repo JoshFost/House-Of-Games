@@ -145,7 +145,7 @@ describe("app", () => {
         .get("/api/reviews/999")
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("Not Found");
+          expect(body.msg).toBe("review_id not found");
         });
     });
   });
@@ -208,6 +208,7 @@ describe("POST /api/reviews/:review_id/comments", () => {
           body: comment.body,
           created_at: expect.any(String),
           review_id: 1,
+          votes: expect.any(Number),
         };
         expect(response.body.comment).toMatchObject(expectedComment);
       });
@@ -220,6 +221,38 @@ describe("POST /api/reviews/:review_id/comments", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Bad Request");
+      });
+  });
+  it("responds with 404 Not Found when given a non-existent username", () => {
+    const comment = { username: "nonexistentuser", body: "test comment" };
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send(comment)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("User not found");
+      });
+  });
+  it("201: it should ignore unnecessary properties", () => {
+    const comment = {
+      username: "mallionaire",
+      body: "test comment",
+      faveAnimal: "snake",
+    };
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send(comment)
+      .expect(201)
+      .then((response) => {
+        const expectedComment = {
+          comment_id: expect.any(Number),
+          author: comment.username,
+          body: comment.body,
+          created_at: expect.any(String),
+          review_id: 1,
+          votes: expect.any(Number),
+        };
+        expect(response.body.comment).toMatchObject(expectedComment);
       });
   });
 });

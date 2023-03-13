@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const cors = require("cors");
 //get from the controller
 const {
   getCategoryData,
@@ -18,6 +19,8 @@ const {
   handlePsqlErrors,
   handleReviewNotFoundError,
 } = require("./controllers/errorHandler");
+
+app.use(cors());
 
 app.use(express.json());
 

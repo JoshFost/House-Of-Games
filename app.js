@@ -10,6 +10,7 @@ const {
   patchReviewById,
   postCommentsByReviewId,
   getUsersData,
+  getReviewQueries,
 } = require("./controllers/categoryDataController");
 
 const {
@@ -31,6 +32,8 @@ app.get("/api", (req, res) => {
 app.get("/api/categories", getCategoryData);
 
 app.get("/api/reviews", getReviewData);
+//getReviewQueries,
+app.get("/api/reviews/?", getReviewQueries);
 
 app.get("/api/reviews/:review_id", getReviewById);
 
@@ -41,6 +44,8 @@ app.patch("/api/reviews/:review_id", patchReviewById);
 app.post("/api/reviews/:review_id/comments", postCommentsByReviewId);
 
 app.get("/api/users", getUsersData);
+
+//need to add app.patch  /api/reviews/:review_id/comments  to be able to make a vote button for comments.
 
 app.use(handle404nonExistentPaths);
 

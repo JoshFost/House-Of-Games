@@ -7,6 +7,7 @@ const {
   updateReviewById,
   insertPostCommentsByReviewId,
   fetchAllUsersData,
+  fetchReviewQueries,
 } = require("../models/categoryDataModel");
 const app = require("../app");
 
@@ -84,6 +85,19 @@ exports.getUsersData = (req, res, next) => {
   fetchAllUsersData()
     .then((users) => {
       res.status(200).send({ users });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getReviewQueries = (req, res, next) => {
+  const { category, sort_by = "created_at", order = "desc" } = req.query;
+  const queries = { category, sort_by, order };
+  fetchReviewQueries(queries)
+    .then((reviews) => {
+      const filteredResults = filterResults(reviews.rows, queries);
+      res.status(200).send({ reviews: filteredResults });
     })
     .catch((err) => {
       next(err);

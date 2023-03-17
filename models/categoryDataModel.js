@@ -23,7 +23,7 @@ exports.fetchAllReviewData = () => {
     FROM reviews
     LEFT JOIN comments ON reviews.review_id = comments.review_id
     GROUP BY reviews.review_id
-    ORDER BY reviews.created_at DESC;
+    ORDER BY reviews.created_at DESC, reviews.review_id DESC;
   `
     )
     .then((result) => {
@@ -125,4 +125,18 @@ exports.fetchAllUsersData = () => {
       const users = result.rows;
       return users;
     });
+};
+
+exports.fetchReviewQueries = (queries) => {
+  let query = `SELECT * FROM reviews`;
+  let queryString = [];
+
+  if (queries.category) {
+    query += ` WHERE category = ?`;
+    queryString.push(queries.category);
+  }
+
+  query += ` ORDER BY ${queries.sort_by} ${queries.order.toUpperCase()}`;
+
+  return db.query(query, queryString);
 };
